@@ -150,8 +150,10 @@ class Popupeverywhere extends Module
      */
     public function hookHeader()
     {
+        $this->context->controlleradmi->addjqueryPlugin('cooki-plugin');
         $this->context->controller->addJS($this->_path . '/views/js/ouibounce.js');
         $this->context->controller->addCSS($this->_path . '/views/css/ouibounce.css');
+        
     }
 
     public function hookDisplayFooter()

@@ -524,23 +524,23 @@ class AdminPEController extends ModuleAdminController
         );
 
         $this->fields_form['input'][] = array(
-                'tab' => 'sticker',
-                'type' => 'radio',
-                'label' => $this->l('Display'),
-                'name' => 'stickerDisplay',
-                'values' => array(
-                    array(
-                        'value' => 'after',
-                        'id' => 'after',
-                        'label' => $this->l('After closing popups')
-                    ),
-                    array(
-                        'value' => 'before',
-                        'id' => 'before',
-                        'label' => $this->l('Before opening popups')
-                    ),
+            'tab' => 'sticker',
+            'type' => 'radio',
+            'label' => $this->l('Display'),
+            'name' => 'stickerDisplay',
+            'values' => array(
+                array(
+                    'value' => 'after',
+                    'id' => 'after',
+                    'label' => $this->l('After closing popups')
                 ),
-                'default_value' => isset($options->stickerDisplay) ? $options->stickerDisplay : 'after'
+                array(
+                    'value' => 'before',
+                    'id' => 'before',
+                    'label' => $this->l('Before opening popups')
+                ),
+            ),
+            'default_value' => isset($options->stickerDisplay) ? $options->stickerDisplay : 'after'
         );
         $this->fields_form['input'][] = array(
             'tab' => 'sticker',
@@ -658,6 +658,14 @@ class AdminPEController extends ModuleAdminController
             'options' => array(
                 'query' => array(
                     array(
+                        'id' => 'right:0; top:0;',
+                        'name' => $this->l('right top')
+                    ),
+                    array(
+                        'id' => 'right:0; bottom:0;',
+                        'name' => $this->l('right bottom')
+                    ),
+                    array(
                         'id' => 'left:0; top:0;',
                         'name' => $this->l('left top')
                     ),
@@ -665,14 +673,6 @@ class AdminPEController extends ModuleAdminController
                         'id' => 'left:0; bottom:0;',
                         'name' => $this->l('left bottom')
                     ),
-                    array(
-                        'id' => 'right:0; top:0;',
-                        'name' => $this->l('right top')
-                    ),
-                    array(
-                        'id' => 'right:0; bottom:0;',
-                        'name' => $this->l('right bottom')
-                    )
                 ),
                 'id' => 'id',
                 'name' => 'name',
@@ -686,7 +686,7 @@ class AdminPEController extends ModuleAdminController
             'label' => 'Inline CSS style for sticker',
             'name' => 'styleSticker',
             'desc' => $this->l('For advanced user'),
-            'default_value' => isset($options->styleSticker) ? $options->styleSticker : '',
+            'default_value' => isset($options->styleSticker) ? $options->styleSticker : 'border-radius:3px; box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);',
         );
 
         if (Shop::isFeatureActive()) {
