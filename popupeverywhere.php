@@ -26,10 +26,10 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+include_once dirname(__FILE__) . '/models/PE.php';
 
 class Popupeverywhere extends Module
 {
-
     protected $config_form = false;
 
     public function __construct()
@@ -140,9 +140,8 @@ class Popupeverywhere extends Module
      */
     public function hookBackOfficeHeader()
     {
-        if (Tools::getValue('module_name') == $this->name) {
-//            $this->context->controller->addJS($this->_path . 'views/js/back.js');
-//            $this->context->controller->addCSS($this->_path . 'views/css/back.css');
+        if (in_array(Dispatcher::getInstance()->getController(), array('AdminPE'))) {
+            $this->context->controller->addCSS($this->_path . '/views/css/admin.css');
         }
     }
 
@@ -151,12 +150,67 @@ class Popupeverywhere extends Module
      */
     public function hookHeader()
     {
-//        $this->context->controller->addJS($this->_path . '/views/js/front.js');
-//        $this->context->controller->addCSS($this->_path . '/views/css/front.css');
+        $this->context->controller->addJS($this->_path . '/views/js/ouibounce.js');
+        $this->context->controller->addCSS($this->_path . '/views/css/ouibounce.css');
     }
 
     public function hookDisplayFooter()
     {
-        /* Place your code here. */
+        $popup = $this->load_popup();
+        if ($popup) {
+            Context::getContext()->smarty->assign(array(
+                'pe' => $popup,
+            ));
+            return Context::getContext()->smarty->fetch(
+                    dirname(__FILE__) . '/views/templates/hook/popup.tpl');
+        }
+    }
+
+    private function load_popup()
+    {
+        $parms = array();
+        $parms['active'] = 1;
+        $popups = PE::getAll($parms);
+        if (empty($popups))
+            return;
+
+        foreach ($popups as $key => $popup) {
+            if ($popup['date_to'] && $popup['date_to'] != '0000-00-00 00:00:00' && time() > strtotime($popup['date_to'])) {
+                continue;
+            }
+            
+            $popup['options'] = $popups[$key]['options'] = Tools::jsonDecode($popup['options']);
+
+            $view = array();
+            (isset($popup['options']->categories) && empty($popup['options']->categories) == false ? array_push($view, 'category') : '');
+            (isset($popup['options']->cms) && empty($popup['options']->cms) == false ? array_push($view, 'cms') : '');
+            (isset($popup['options']->controllers) && empty($popup['options']->controllers) == false ? $view = array_merge(array_values($view), array_values($popup['options']->controllers)) : '');
+            (isset($popup['options']->products) && empty($popup['options']->products) == false ? array_push($view, 'product') : '');
+
+            if (empty($view) == false) {
+                if (!in_array(Dispatcher::getInstance()->getController(), $view)) {
+                    continue;
+                }
+                if (Dispatcher::getInstance()->getController() == 'category' && in_array(Tools::getValue('id_category'), $popup['options']->categories) == false) {
+                    continue;
+                }
+                if (Dispatcher::getInstance()->getController() == 'product' && !empty($popup['options']->products) && (!Tools::getIsset('id_product') || !in_array(Tools::getValue('id_product'), $popup['options']->products))) {
+                    continue;
+                }
+                if (Dispatcher::getInstance()->getController() == 'cms') {
+                    $categories = array();
+                    $cms = array();
+                    foreach ($popup['options']->cms as $c) {
+                        if (strpos($c, 'category_') !== false)
+                            $categories[] = str_replace('category_', '', $c);
+                        if (strpos($c, 'cms_') !== false)
+                            $cms[] = str_replace('cms_', '', $c);
+                    }
+                    if (!in_array(Tools::getValue('id_cms'), $cms) && !in_array(Tools::getValue('id_cms_category'), $categories))
+                        continue;
+                }
+            }
+            return $popup;
+        }
     }
 }

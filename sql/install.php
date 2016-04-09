@@ -43,7 +43,9 @@ CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'popupeverywhere_lang` (
   `button` varchar(100),
   `link` varchar(255),
   `close` varchar(100),
+  `content` TEXT,
   `html` TEXT,
+  `sticker` TEXT,
   PRIMARY KEY (`id_popupeverywhere`,id_lang)
 ) ENGINE = ' . _MYSQL_ENGINE_ . '  ';
 
@@ -54,7 +56,6 @@ $sql[] = ''
       PRIMARY KEY (`id_popupeverywhere`, `id_shop`)
     ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;'
     . '';
-
 
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {
