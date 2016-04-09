@@ -19,7 +19,7 @@
             {/if}
             <div class="modal-body">
                 {html_entity_decode($pe.content|escape:'htmlall':'UTF-8')}
-                {html_entity_decode($pe.html|escape:'UTF-8')}
+                {html_entity_decode($pe.html|replace:'\'':'"'|escape:'htmlall':'UTF-8')}
                 {if $pe.button}
                     <p class="text-center">
                         <a style="{if $pe.options->backgroundColorButton}background-color:{$pe.options->backgroundColorButton|escape:'html':'UTF-8'};{/if}{if $pe.options->colorButton}color:{$pe.options->colorButton|escape:'html':'UTF-8'};{/if}" href="{$pe.link|escape:'html':'UTF-8'}" class="btn-modal">{$pe.button|escape:'html':'UTF-8'}</a>
@@ -36,16 +36,16 @@
     <script type="text/javascript">
         var _ouibounce = ouibounce(document.getElementById('ouibounce-modal'), {
         {if $pe.options->Sensitivity}
-        sensitivity: {$pe.options->Sensitivity},
+        sensitivity: {$pe.options->Sensitivity|escape:'html':'UTF-8'},
         {/if}
-        {if $pe.options->Aggressive}
+        {if $pe.options->Aggressive|escape:'html':'UTF-8'}
         aggressive: true,
         {/if}
         {if $pe.options->Timer}
-        timer: {$pe.options->Timer},
+        timer: {$pe.options->Timer|escape:'html':'UTF-8'},
         {/if}
         {if $pe.options->Delay}
-        delay: {$pe.options->Timer},
+        delay: {$pe.options->Timer|escape:'html':'UTF-8'},
         {/if}
         {if $pe.options->CookieExpiration|escape:'html':'UTF-8'}
         cookieExpire : '{$pe.options->CookieExpiration|escape:'html':'UTF-8'}',
@@ -56,7 +56,7 @@
                 closeModal();
                         $.cookie('pesticker{$pe.id_popupeverywhere|escape:'html':'UTF-8'}', {$pe.id_popupeverywhere|escape:'html':'UTF-8'}, { expires: {$pe.options->CookieExpiration|escape:'html':'UTF-8'}, path: '/' });
         {if $pe.options->GoogleAnalytics}
-                ga('send', 'event', 'PopupEverywhere', 'OpenWindow', '{$pe.alias|default|escape:'htmlall':'UTF - 8'}');
+                ga('send', 'event', 'PopupEverywhere', 'OpenWindow', '{$pe.alias|default|escape:'htmlall':'UTF-8'}');
         {/if}
                 }
         });
@@ -79,7 +79,7 @@
         });
                 $('.pe-sticker a').click(function (e) {
         {if $pe.options->GoogleAnalytics}
-        ga('send', 'event', 'PopupEverywhere', 'ClickSticker', '{$pe.alias|default|escape:'htmlall':'UTF - 8'}');
+        ga('send', 'event', 'PopupEverywhere', 'ClickSticker', '{$pe.alias|default|escape:'htmlall':'UTF-8'}');
         {/if}
         _ouibounce.afire();
                 return false;
@@ -90,7 +90,7 @@
                 var popupdelay;
                 var date = new Date();
                 if (!$.cookie(autopopupvar)){
-        popupdelay = date.getTime() + ({$pe.options->AutoPopup} * 1000);
+        popupdelay = date.getTime() + ({$pe.options->AutoPopup|escape:'html':'UTF-8'} * 1000);
                 $.cookie(autopopupvar, popupdelay);
         } else{
         popupdelay = $.cookie(autopopupvar);
