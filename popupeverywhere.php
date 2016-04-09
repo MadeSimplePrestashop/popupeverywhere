@@ -37,7 +37,7 @@ class Popupeverywhere extends Module
         $this->name = 'popupeverywhere';
         $this->tab = 'administration';
         $this->version = '1.0.0';
-        $this->author = 'kuzmany.biz/prestashop';
+        $this->author = 'Kuzmany';
         $this->need_instance = 0;
 
         /**
