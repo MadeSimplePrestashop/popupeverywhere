@@ -30,6 +30,7 @@ include_once dirname(__FILE__) . '/models/PE.php';
 
 class Popupeverywhere extends Module
 {
+
     protected $config_form = false;
 
     public function __construct()
@@ -39,6 +40,7 @@ class Popupeverywhere extends Module
         $this->version = '1.0.0';
         $this->author = 'Kuzmany';
         $this->need_instance = 0;
+        $this->module_key = 'd8d8628d8eac6cca423206473a40ef16';
 
         /**
          * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
@@ -150,10 +152,9 @@ class Popupeverywhere extends Module
      */
     public function hookHeader()
     {
-        $this->context->controlleradmi->addjqueryPlugin('cooki-plugin');
+        $this->context->controller->addjqueryPlugin('cooki-plugin');
         $this->context->controller->addJS($this->_path . '/views/js/ouibounce.js');
         $this->context->controller->addCSS($this->_path . '/views/css/ouibounce.css');
-        
     }
 
     public function hookDisplayFooter()
@@ -163,8 +164,7 @@ class Popupeverywhere extends Module
             Context::getContext()->smarty->assign(array(
                 'pe' => $popup,
             ));
-            return Context::getContext()->smarty->fetch(
-                    dirname(__FILE__) . '/views/templates/hook/popup.tpl');
+            return $this->display(__FILE__, 'views/templates/hook/popup.tpl');
         }
     }
 
@@ -180,7 +180,7 @@ class Popupeverywhere extends Module
             if ($popup['date_to'] && $popup['date_to'] != '0000-00-00 00:00:00' && time() > strtotime($popup['date_to'])) {
                 continue;
             }
-            
+
             $popup['options'] = $popups[$key]['options'] = Tools::jsonDecode($popup['options']);
 
             $view = array();
