@@ -102,6 +102,8 @@
         }, (popupdelay - date.getTime()));
         }
         {/if}
-
+        {if $pe_direct}
+               _ouibounce.afire();
+            {/if}
     </script>
 {/if}

@@ -32,6 +32,7 @@ class Popupeverywhere extends Module
 {
 
     protected $config_form = false;
+    public $cipherTool;
 
     public function __construct()
     {
@@ -53,6 +54,12 @@ class Popupeverywhere extends Module
         $this->description = $this->l('Popups wherever you want.');
 
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+
+        if (!Configuration::get('PS_CIPHER_ALGORITHM') || !defined('_RIJNDAEL_KEY_')) {
+            $this->cipherTool = new Blowfish(__CLASS__ . _COOKIE_KEY_, _COOKIE_IV_);
+        } else {
+            $this->cipherTool = new Rijndael(__CLASS__ . _RIJNDAEL_KEY_, _RIJNDAEL_IV_);
+        }
     }
 
     /**
@@ -159,11 +166,35 @@ class Popupeverywhere extends Module
 
     public function hookDisplayFooter()
     {
-        $popup = $this->load_popup();
+        $pe_direct = false;
+        $cookie = new Cookie(__CLASS__);
+        if ((Tools::getIsset('pe') && $peid = $this->cipherTool->decrypt(Tools::getValue('pe'))) || $peidfromcookie = $cookie->__get('pe_direct')) {
+            if (isset($peidfromcookie)) {
+                $peid = $peidfromcookie;
+            }
+            $popup = PE::getAll(array('c.' . PE::$definition['primary'] => $peid));
+            if ($popup) {
+                $popup = $popup[0];
+                $popup['options'] = Tools::jsonDecode($popup['options']);
+                $pe_direct = true;
+                $time = time() + ($popup['options']->CookieExpiration * 3600 * 24);
+                $cookie->setExpire($time);
+                $cookie->__set('pe_direct', $peid);
+            }
+        }
+        if ($pe_direct == false) {
+            $popup = $this->load_popup();
+        }
+
         if ($popup) {
             Context::getContext()->smarty->assign(array(
                 'pe' => $popup,
             ));
+            if (!isset($peidfromcookie)) {
+                Context::getContext()->smarty->assign(array(
+                    'pe_direct' => $pe_direct
+                ));
+            }
             return $this->display(__FILE__, 'views/templates/hook/popup.tpl');
         }
     }

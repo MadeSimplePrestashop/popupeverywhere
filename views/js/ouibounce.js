@@ -84,6 +84,7 @@ function ouibounce(el, custom_config) {
   function afire() {
     if (el) { $(el).show(); }
     callback();
+    disable();
   }
   // You can use ouibounce without passing an element
   // https://github.com/carlsednaoui/ouibounce/issues/30

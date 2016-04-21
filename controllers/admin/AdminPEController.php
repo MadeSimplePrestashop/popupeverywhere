@@ -296,6 +296,17 @@ class AdminPEController extends ModuleAdminController
             'name' => 'backgroundColorButton',
             'default_value' => isset($options->backgroundColorButton) ? $options->backgroundColorButton : '#4ab471',
         );
+        if ($obj->id) {
+            $this->fields_form['input'][] = array(
+                'readonly' => 'readonly',
+                'tab' => 'display',
+                'type' => 'text',
+                'label' => $this->l('Direct Open'),
+                'desc' => $this->l('Read only, just copy/paste'),
+                'name' => 'directlink',
+                'default_value' => $this->context->shop->getBaseUrl() . '?pe=' . urlencode($this->module->cipherTool->encrypt($obj->id)),
+            );
+        }
 
         $this->fields_form['input'][] = array(
             'type' => 'select',
@@ -738,7 +749,7 @@ class AdminPEController extends ModuleAdminController
                 'title' => $this->l('Alias'),
                 'type' => 'text',
                 'orderby' => false,
-                'search' => false
+                'search' => true
             ),
             'date_to' => array(
                 'title' => $this->l('Active until'),
@@ -751,7 +762,7 @@ class AdminPEController extends ModuleAdminController
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false,
-                'search' => false
+                'search' => true
             )
         );
 
@@ -772,7 +783,7 @@ class AdminPEController extends ModuleAdminController
             $controllers_array = Cache::getInstance()->get($cache_id);
         } else {
 
-            // @todo do something better with controllers
+// @todo do something better with controllers
             $controllers = Dispatcher::getControllers(_PS_FRONT_CONTROLLER_DIR_);
             ksort($controllers);
             foreach (array_keys($controllers) as $k) {
